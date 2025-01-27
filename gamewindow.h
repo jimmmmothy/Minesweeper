@@ -18,7 +18,11 @@ class GameWindow : public QMainWindow
 public:
     GameWindow(QWidget *parent = nullptr);
     ~GameWindow();
-    void DrawField(std::vector<std::vector<char>> field);
+    void DrawField(int size);
+    void on_cell_clicked();
+
+private slots:
+    void on_btnNewGame_clicked();
 
 private:
     Ui::GameWindow *ui;

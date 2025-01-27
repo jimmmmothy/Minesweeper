@@ -7,14 +7,15 @@ class Board
 public:
     Board(int size, int mineCount);
     void PlaceMines();
-    void RevealCell(int x, int y);
-    void FlagCell(int x, int y);
-    std::vector<std::vector<char>> GetField();
+    char RevealCell(int row, int col);
+    void FlagCell(int row, int col);
+    void Reset();
+    int GetSize();
 
 private:;
     int size;
-    std::vector<std::vector<char>> field;
     int mineCount;
+    std::vector<int> mineCoords;
 };
 
 #endif // BOARD_H
