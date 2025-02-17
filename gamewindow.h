@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <memory>
 #include "board.h"
+#include "qpushbutton.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,11 +19,12 @@ class GameWindow : public QMainWindow
 public:
     GameWindow(QWidget *parent = nullptr);
     ~GameWindow();
-    void DrawField(int size);
+    void DrawField();
     void on_cell_clicked();
 
 private slots:
     void on_btnNewGame_clicked();
+    void onRightClicked();
 
 private:
     Ui::GameWindow *ui;

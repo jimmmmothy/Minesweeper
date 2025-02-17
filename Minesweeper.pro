@@ -11,11 +11,13 @@ CONFIG += c++17
 SOURCES += \
     board.cpp \
     main.cpp \
-    gamewindow.cpp
+    gamewindow.cpp \
+    qrightclickbutton.cpp
 
 HEADERS += \
     board.h \
-    gamewindow.h
+    gamewindow.h \
+    qrightclickbutton.h
 
 FORMS += \
     gamewindow.ui
