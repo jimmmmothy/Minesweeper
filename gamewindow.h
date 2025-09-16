@@ -1,10 +1,9 @@
-#ifndef GAMEWINDOW_H
-#define GAMEWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <memory>
 #include "board.h"
-#include "qpushbutton.h"
+#include "qextendedbutton.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,15 +18,18 @@ class GameWindow : public QMainWindow
 public:
     GameWindow(QWidget *parent = nullptr);
     ~GameWindow();
-    void DrawField();
-    void on_cell_clicked();
+    QExtendedButton* InitButton(std::vector<std::vector<char>> field, int row, int col);
+    void DrawField(std::vector<std::vector<char>> field);
+    void GameOver(std::string str);
 
 private slots:
+    void onRightClicked(int row, int col);
+    void onLeftClicked(int row, int col);
     void on_btnNewGame_clicked();
-    void onRightClicked();
+
+    void on_btnShowMines_clicked();
 
 private:
     Ui::GameWindow *ui;
     std::unique_ptr<Board> board;
 };
-#endif // GAMEWINDOW_H

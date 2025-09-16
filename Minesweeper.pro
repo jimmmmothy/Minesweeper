@@ -12,12 +12,12 @@ SOURCES += \
     board.cpp \
     main.cpp \
     gamewindow.cpp \
-    qrightclickbutton.cpp
+    qextendedbutton.cpp
 
 HEADERS += \
     board.h \
     gamewindow.h \
-    qrightclickbutton.h
+    qextendedbutton.h
 
 FORMS += \
     gamewindow.ui
@@ -26,3 +26,19 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    textures/blast.svg \
+    textures/cell0.svg \
+    textures/cell1.svg \
+    textures/cell2.svg \
+    textures/cell3.svg \
+    textures/cell4.svg \
+    textures/cell5.svg \
+    textures/cell6.svg \
+    textures/cell7.svg \
+    textures/cell8.svg \
+    textures/cellflag.svg \
+    textures/cellmine.svg \
+    textures/cellup.svg \
+    textures/falsemine.svg
