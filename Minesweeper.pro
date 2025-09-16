@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui widgets svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -42,3 +42,6 @@ DISTFILES += \
     textures/cellmine.svg \
     textures/cellup.svg \
     textures/falsemine.svg
+
+RESOURCES += \
+    textures.qrc

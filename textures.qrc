@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/textures">
+        <file>textures/blast.svg</file>
+        <file>textures/cell0.svg</file>
+        <file>textures/cell1.svg</file>
+        <file>textures/cell2.svg</file>
+        <file>textures/cell3.svg</file>
+        <file>textures/cell4.svg</file>
+        <file>textures/cell5.svg</file>
+        <file>textures/cell6.svg</file>
+        <file>textures/cell7.svg</file>
+        <file>textures/cell8.svg</file>
+        <file>textures/cellflag.svg</file>
+        <file>textures/cellmine.svg</file>
+        <file>textures/cellup.svg</file>
+        <file>textures/falsemine.svg</file>
+    </qresource>
+</RCC>
