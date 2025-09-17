@@ -14,8 +14,9 @@ public:
     int GetSizex();
     int GetSizey();
     int GetMineCount();
-    std::vector<std::vector<char>> GetField();
-    std::vector<std::vector<char>> GetPrivField();
+    std::vector<std::vector<char>>* GetField();
+    std::vector<std::vector<char>>* GetPrivField();
+    std::vector<std::vector<char>>* GetLosingField();
     int CheckAdjacentMines(int row, int col);
     int CheckAdjacentFlags(int row, int col);
 
@@ -27,4 +28,5 @@ private:;
     int freeCountRem;
     std::vector<std::vector<char>> privField;
     std::vector<std::vector<char>> drawField;
+    std::vector<std::vector<char>> losingField;
 };

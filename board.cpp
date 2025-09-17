@@ -9,6 +9,7 @@ Board::Board(int sizex, int sizey, int mineCount) : sizex(sizex), sizey(sizey), 
 {
     privField.resize(sizex, std::vector<char>(sizey, '.'));
     drawField.resize(sizex, std::vector<char>(sizey, '.'));
+    losingField.resize(sizex, std::vector<char>(sizey, '.'));
     freeCountRem = sizex * sizey - mineCount;
     PlaceMines();
 }
@@ -58,14 +59,36 @@ void Board::PlaceMines()
     }
 }
 
-std::vector<std::vector<char>> Board::GetField()
+std::vector<std::vector<char>>* Board::GetField()
 {
-    return this->drawField;
+    return &drawField;
 }
 
-std::vector<std::vector<char>> Board::GetPrivField()
+std::vector<std::vector<char>>* Board::GetLosingField()
 {
-    return this->privField;
+    for (int row = 0; row < sizex; ++row) {
+        for (int col = 0; col < sizey; ++col) {
+            if (drawField[row][col] == '.' && privField[row][col] == 'M')
+            {
+                losingField[row][col] = 'M';
+                continue;
+            }
+            if (drawField[row][col] == 'F' && privField[row][col] != 'M')
+            {
+                losingField[row][col] = 'X';
+                continue;
+            }
+
+            losingField[row][col] = drawField[row][col];
+        }
+    }
+
+    return &losingField;
+}
+
+std::vector<std::vector<char>>* Board::GetPrivField()
+{
+    return &privField;
 }
 
 int Board::RevealCell(int row, int col) {

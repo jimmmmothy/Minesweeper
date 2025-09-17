@@ -4,7 +4,7 @@
 #include <QMouseEvent>
 
 enum CellState {
-    UNOPENED, FLAGGED, MINE, BLAST, NUMBER
+    UNOPENED, FLAGGED, MINE, BLAST, NUMBER, FALSE
 };
 
 class QExtendedButton : public QPushButton

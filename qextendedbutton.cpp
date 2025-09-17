@@ -33,6 +33,9 @@ void QExtendedButton::UpdateStyle()
     case BLAST:
         this->setStyleSheet("border-image: url(:/textures/textures/blast.svg) 0 0 0 0 stretch stretch;");
         break;
+    case FALSE:
+        this->setStyleSheet("border-image: url(:/textures/textures/falsemine.svg) 0 0 0 0 stretch stretch;");
+        break;
     case NUMBER:
     {
         std::string style = "border-image: url(:/textures/textures/cell";

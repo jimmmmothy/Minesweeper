@@ -9,7 +9,7 @@ GameWindow::GameWindow(QWidget *parent)
     , ui(new Ui::GameWindow)
 {
     ui->setupUi(this);
-    board = std::make_unique<Board>(9, 9, 10);
+    board = std::make_unique<Board>(30, 24, 160);
     DrawField(board->GetField());
 }
 
@@ -18,11 +18,11 @@ GameWindow::~GameWindow()
     delete ui;
 }
 
-QExtendedButton* GameWindow::InitButton(std::vector<std::vector<char>> field, int row, int col)
+QExtendedButton* GameWindow::InitButton(std::vector<std::vector<char>>* field, int row, int col)
 {
     CellState state;
 
-    switch (field[row][col]) {
+    switch ((*field)[row][col]) {
     case '.':
         state = UNOPENED;
         break;
@@ -35,17 +35,20 @@ QExtendedButton* GameWindow::InitButton(std::vector<std::vector<char>> field, in
     case 'B':
         state = BLAST;
         break;
+    case 'X':
+        state = FALSE;
+        break;
     default:
         state = NUMBER;
     }
 
     if (state == NUMBER)
-        return new QExtendedButton(row, col, state, this, field[row][col] - '0');
+        return new QExtendedButton(row, col, state, this, (*field)[row][col] - '0');
     else
         return new QExtendedButton(row, col, state, this);
 }
 
-void GameWindow::DrawField(std::vector<std::vector<char>> field)
+void GameWindow::DrawField(std::vector<std::vector<char>>* field)
 {
     this->centralWidget()->findChild<QLabel*>("mineCountLbl")->setText(QString::fromStdString(std::to_string(board->GetMineCount())));
 
@@ -102,11 +105,20 @@ void GameWindow::onLeftClicked(int row, int col)
 
     if (button) {
         int res = board->RevealCell(row, col);
-        DrawField(board->GetField());
         if (res == -1)
+        {
+            DrawField(board->GetLosingField());
             GameOver("Game over!");
+        }
+        else if (res == 1)
+        {
+            DrawField(board->GetField());
+        }
         else if (res == 2)
+        {
+            DrawField(board->GetField());
             GameOver("You won!");
+        }
         return;
     }
 }
