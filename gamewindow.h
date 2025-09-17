@@ -18,8 +18,8 @@ class GameWindow : public QMainWindow
 public:
     GameWindow(QWidget *parent = nullptr);
     ~GameWindow();
-    QExtendedButton* InitButton(std::vector<std::vector<char>>* field, int row, int col);
-    void DrawField(std::vector<std::vector<char>>* field);
+    QExtendedButton* InitButton(char** field, int row, int col);
+    void DrawField(char** field);
     void GameOver(std::string str);
 
 private slots:

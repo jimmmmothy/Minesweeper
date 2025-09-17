@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 class Board
 {
 public:
@@ -14,9 +12,9 @@ public:
     int GetSizex();
     int GetSizey();
     int GetMineCount();
-    std::vector<std::vector<char>>* GetField();
-    std::vector<std::vector<char>>* GetPrivField();
-    std::vector<std::vector<char>>* GetLosingField();
+    char** GetDrawField();
+    char** GetPrivField();
+    char** GetLosingField();
     int CheckAdjacentMines(int row, int col);
     int CheckAdjacentFlags(int row, int col);
 
@@ -26,7 +24,9 @@ private:;
     int mineCountTotal;
     int mineCountRem;
     int freeCountRem;
-    std::vector<std::vector<char>> privField;
-    std::vector<std::vector<char>> drawField;
-    std::vector<std::vector<char>> losingField;
+    char** privField;
+    char** drawField;
+    char** losingField;
+    char** InitField();
+    void ResetField(char** field);
 };

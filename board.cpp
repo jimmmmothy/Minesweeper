@@ -7,11 +7,33 @@
 
 Board::Board(int sizex, int sizey, int mineCount) : sizex(sizex), sizey(sizey), mineCountTotal(mineCount), mineCountRem(mineCount)
 {
-    privField.resize(sizex, std::vector<char>(sizey, '.'));
-    drawField.resize(sizex, std::vector<char>(sizey, '.'));
-    losingField.resize(sizex, std::vector<char>(sizey, '.'));
+    privField = InitField();
+    drawField = InitField();
+    losingField = InitField();
     freeCountRem = sizex * sizey - mineCount;
     PlaceMines();
+}
+
+char** Board::InitField()
+{
+    char** field = new char*[this->sizex];
+    for (int row = 0; row < sizex; ++row) {
+        field[row] = new char[sizey];
+        for (int col = 0; col < sizey; ++col) {
+            field[row][col] = '.';
+        }
+    }
+
+    return field;
+}
+
+void Board::ResetField(char** field)
+{
+    for (int row = 0; row < sizex; ++row) {
+        for (int col = 0; col < sizey; ++col) {
+            field[row][col] = '.';
+        }
+    }
 }
 
 int Board::GetSizex()
@@ -31,10 +53,9 @@ int Board::GetMineCount()
 
 void Board::Reset()
 {
-    drawField.clear();
-    privField.clear();
-    drawField.resize(sizex, std::vector<char>(sizey, '.'));
-    privField.resize(sizex, std::vector<char>(sizey, '.'));
+    ResetField(privField);
+    ResetField(drawField);
+    ResetField(losingField);
     mineCountRem = this->mineCountTotal;
     freeCountRem = sizex * sizey - mineCountTotal;
     PlaceMines();
@@ -59,12 +80,12 @@ void Board::PlaceMines()
     }
 }
 
-std::vector<std::vector<char>>* Board::GetField()
+char** Board::GetDrawField()
 {
-    return &drawField;
+    return drawField;
 }
 
-std::vector<std::vector<char>>* Board::GetLosingField()
+char** Board::GetLosingField()
 {
     for (int row = 0; row < sizex; ++row) {
         for (int col = 0; col < sizey; ++col) {
@@ -83,12 +104,12 @@ std::vector<std::vector<char>>* Board::GetLosingField()
         }
     }
 
-    return &losingField;
+    return losingField;
 }
 
-std::vector<std::vector<char>>* Board::GetPrivField()
+char** Board::GetPrivField()
 {
-    return &privField;
+    return privField;
 }
 
 int Board::RevealCell(int row, int col) {

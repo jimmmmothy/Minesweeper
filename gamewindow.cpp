@@ -10,7 +10,7 @@ GameWindow::GameWindow(QWidget *parent)
 {
     ui->setupUi(this);
     board = std::make_unique<Board>(30, 24, 160);
-    DrawField(board->GetField());
+    DrawField(board->GetDrawField());
 }
 
 GameWindow::~GameWindow()
@@ -18,11 +18,11 @@ GameWindow::~GameWindow()
     delete ui;
 }
 
-QExtendedButton* GameWindow::InitButton(std::vector<std::vector<char>>* field, int row, int col)
+QExtendedButton* GameWindow::InitButton(char** field, int row, int col)
 {
     CellState state;
 
-    switch ((*field)[row][col]) {
+    switch (field[row][col]) {
     case '.':
         state = UNOPENED;
         break;
@@ -43,12 +43,12 @@ QExtendedButton* GameWindow::InitButton(std::vector<std::vector<char>>* field, i
     }
 
     if (state == NUMBER)
-        return new QExtendedButton(row, col, state, this, (*field)[row][col] - '0');
+        return new QExtendedButton(row, col, state, this, field[row][col] - '0');
     else
         return new QExtendedButton(row, col, state, this);
 }
 
-void GameWindow::DrawField(std::vector<std::vector<char>>* field)
+void GameWindow::DrawField(char** field)
 {
     this->centralWidget()->findChild<QLabel*>("mineCountLbl")->setText(QString::fromStdString(std::to_string(board->GetMineCount())));
 
@@ -77,7 +77,7 @@ void GameWindow::DrawField(std::vector<std::vector<char>>* field)
 void GameWindow::on_btnNewGame_clicked()
 {
     board->Reset();
-    DrawField(board->GetField());
+    DrawField(board->GetDrawField());
     this->centralWidget()->findChild<QPushButton*>("btnNewGame")->setText("New Game");
 }
 
@@ -112,11 +112,11 @@ void GameWindow::onLeftClicked(int row, int col)
         }
         else if (res == 1)
         {
-            DrawField(board->GetField());
+            DrawField(board->GetDrawField());
         }
         else if (res == 2)
         {
-            DrawField(board->GetField());
+            DrawField(board->GetDrawField());
             GameOver("You won!");
         }
         return;
@@ -130,7 +130,7 @@ void GameWindow::onRightClicked(int row, int col)
 
     if (button) {
         board->FlagCell(row, col);
-        DrawField(board->GetField());
+        DrawField(board->GetDrawField());
         return;
     }
 }
