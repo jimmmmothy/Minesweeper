@@ -29,6 +29,7 @@ Makefile*
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
+*.qrc.depends
 Thumbs.db
 *.res
 *.rc
@@ -39,6 +40,7 @@ Thumbs.db
 *.pro.user*
 *.qbs.user*
 CMakeLists.txt.user*
+*.cmake
 
 # xemacs temporary files
 *.flc
@@ -80,3 +82,5 @@ CMakeLists.txt.user*
 .rcc/
 .uic/
 /build*/
+
+.vscode/

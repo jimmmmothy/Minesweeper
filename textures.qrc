@@ -1,18 +1,33 @@
 <RCC>
     <qresource prefix="/textures">
-        <file>textures/blast.svg</file>
-        <file>textures/cell0.svg</file>
-        <file>textures/cell1.svg</file>
-        <file>textures/cell2.svg</file>
-        <file>textures/cell3.svg</file>
-        <file>textures/cell4.svg</file>
-        <file>textures/cell5.svg</file>
-        <file>textures/cell6.svg</file>
-        <file>textures/cell7.svg</file>
-        <file>textures/cell8.svg</file>
-        <file>textures/cellflag.svg</file>
-        <file>textures/cellmine.svg</file>
-        <file>textures/cellup.svg</file>
-        <file>textures/falsemine.svg</file>
+        <file>textures/cells/blast.svg</file>
+        <file>textures/cells/cell0.svg</file>
+        <file>textures/cells/cell1.svg</file>
+        <file>textures/cells/cell2.svg</file>
+        <file>textures/cells/cell3.svg</file>
+        <file>textures/cells/cell4.svg</file>
+        <file>textures/cells/cell5.svg</file>
+        <file>textures/cells/cell6.svg</file>
+        <file>textures/cells/cell7.svg</file>
+        <file>textures/cells/cell8.svg</file>
+        <file>textures/cells/cellflag.svg</file>
+        <file>textures/cells/cellmine.svg</file>
+        <file>textures/cells/cellup.svg</file>
+        <file>textures/cells/falsemine.svg</file>
+        <file>textures/faces/clickface.png</file>
+        <file>textures/faces/lostface.png</file>
+        <file>textures/faces/smileface.png</file>
+        <file>textures/faces/smilefacedown.png</file>
+        <file>textures/faces/winface.png</file>
+        <file>textures/counters/counter0.png</file>
+        <file>textures/counters/counter1.png</file>
+        <file>textures/counters/counter2.png</file>
+        <file>textures/counters/counter3.png</file>
+        <file>textures/counters/counter4.png</file>
+        <file>textures/counters/counter5.png</file>
+        <file>textures/counters/counter6.png</file>
+        <file>textures/counters/counter7.png</file>
+        <file>textures/counters/counter8.png</file>
+        <file>textures/counters/counter9.png</file>
     </qresource>
 </RCC>

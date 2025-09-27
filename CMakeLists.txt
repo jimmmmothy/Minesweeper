@@ -16,13 +16,13 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Svg REQUIRED)
 
-set(SOURCES board.cpp main.cpp gamewindow.cpp qextendedbutton.cpp)
-set(HEADERS board.h gamewindow.h qextendedbutton.h)
+set(SOURCES board.cpp main.cpp gamewindow.cpp  cellitem.cpp)
+set(HEADERS board.h gamewindow.h  cellitem.h enums.h)
 set(UI gamewindow.ui)
 set(RESOURCES textures.qrc)
 
 # Generate UI and resource files
-qt_wrap_ui(UI_HEADERS ${FORMS})
+qt_wrap_ui(UI_HEADERS ${UI})
 qt_add_resources(RESOURCE_SOURCES ${RESOURCES})
 
 # Define executable
@@ -31,6 +31,7 @@ add_executable(Minesweeper
     ${HEADERS}
     ${UI_HEADERS}
     ${RESOURCE_SOURCES}
+    counter.h counter.cpp
 )
 
 # Link with Qt modules
@@ -39,7 +40,6 @@ target_link_libraries(Minesweeper PRIVATE
     Qt5::Svg
 )
 
-# Install rules (similar to your .pro file)
 if(QNX)
     set(INSTALL_PATH /tmp/${PROJECT_NAME}/bin)
 elseif(UNIX AND NOT ANDROID)

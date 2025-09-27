@@ -1,16 +1,40 @@
 #include "gamewindow.h"
-#include "qpushbutton.h"
-#include "qextendedbutton.h"
+#include "cellitem.h"
+// #include "qextendedbutton.h"
 #include "ui_gamewindow.h"
 #include "board.h"
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QDebug>
+#include <qlabel.h>
+#include <unistd.h>
+#include <QTransform>
 
 GameWindow::GameWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::GameWindow)
+    : QMainWindow(parent), ui(new Ui::GameWindow)
 {
     ui->setupUi(this);
     board = std::make_unique<Board>(30, 24, 160);
-    DrawField(board->GetDrawField());
+    scene = new QGraphicsScene(this);
+
+    // Adding visual elements in proper order in layouts
+    mineCount = new Counter(board->GetMineCount());
+    ui->hLayout->addLayout(mineCount);
+    ui->hLayout->addWidget(ui->newGameBtn, 0, Qt::AlignCenter);
+    ui->hLayout->setSizeConstraint(QLayout::SetMinimumSize);
+    ui->hLayout->setAlignment(Qt::AlignHCenter);
+    ui->vLayout->addWidget(ui->graphicsView, 0, Qt::AlignCenter);
+    ui->vLayout->setAlignment(Qt::AlignTop);
+
+    // Adds cells to the scene
+    DrawField(PUBLIC);
+
+    // Graphics view init thingies
+    ui->graphicsView->setRenderHint(QPainter::Antialiasing, false);
+    ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->graphicsView->setFixedSize(scene->width() + 2, scene->height() + 2);
+    ui->graphicsView->setScene(scene);
 }
 
 GameWindow::~GameWindow()
@@ -18,125 +42,79 @@ GameWindow::~GameWindow()
     delete ui;
 }
 
-QExtendedButton* GameWindow::InitButton(char** field, int row, int col)
+void GameWindow::DrawField(FieldType field)
 {
-    CellState state;
+    mineCount->Set(board->GetMineCount());
 
-    switch (field[row][col]) {
-    case '.':
-        state = UNOPENED;
-        break;
-    case 'F':
-        state = FLAGGED;
-        break;
-    case 'M':
-        state = MINE;
-        break;
-    case 'B':
-        state = BLAST;
-        break;
-    case 'X':
-        state = FALSE;
-        break;
-    default:
-        state = NUMBER;
+    if (isFirstDraw) { // Only allocate the cells to heap once per app run
+        for (int row = 0; row < board->GetSizex(); ++row) {
+            for (int col = 0; col < board->GetSizey(); ++col) {
+                CellItem* cell = new CellItem(CELL_SIZE, row, col, &board);
+                cell->setPos(col * CELL_SIZE, row * CELL_SIZE);
+                connect(cell, SIGNAL(leftClicked(int,int)), this, SLOT(onLeftClicked(int,int)));
+                connect(cell, SIGNAL(rightClicked(int,int)), this, SLOT(onRightClicked(int,int)));
+                scene->addItem(cell);
+            }
+        }
+
+        isFirstDraw = false;
+        return;
     }
 
-    if (state == NUMBER)
-        return new QExtendedButton(row, col, state, this, field[row][col] - '0');
-    else
-        return new QExtendedButton(row, col, state, this);
-}
-
-void GameWindow::DrawField(char** field)
-{
-    this->centralWidget()->findChild<QLabel*>("mineCountLbl")->setText(QString::fromStdString(std::to_string(board->GetMineCount())));
-
-    QGridLayout *layout = ui->field;
-    int sizex = board->GetSizex();
-    int sizey = board->GetSizey();
-
-    while (QLayoutItem* item = layout->takeAt(0))
-    {
-        if (QWidget* widget = item->widget())
-            widget->deleteLater();
-        delete item;
-    }
-
-    for (int row = 0; row < sizex; ++row) {
-        for (int col = 0; col < sizey; ++col) {
-            QExtendedButton* button = InitButton(field, row, col);
-            button->setFixedSize(24, 24);
-            connect(button, SIGNAL(leftClicked(int,int)), this, SLOT(onLeftClicked(int,int)));
-            connect(button, SIGNAL(rightClicked(int,int)), this, SLOT(onRightClicked(int,int)));
-            layout->addWidget(button, row, col);
+    for (QGraphicsItem* item : scene->items()) {
+        if (CellItem* cell = dynamic_cast<CellItem*>(item)) {
+            cell->UpdateState(field);
         }
     }
-}
 
-void GameWindow::on_btnNewGame_clicked()
-{
-    board->Reset();
-    DrawField(board->GetDrawField());
-    this->centralWidget()->findChild<QPushButton*>("btnNewGame")->setText("New Game");
+    // Drawing takes longer than the time it takes for the code to move on to the next function call, e.g. GameOver(), so it would never draw.
+    // processEvents waits for the cells to repaint themselves.
+    qApp->processEvents();
 }
 
 void GameWindow::GameOver(std::string str)
 {
-    // Button needs to be resized
-    QPushButton *newGame = this->centralWidget()->findChild<QPushButton*>("btnNewGame");
-    newGame->setText(QString::fromStdString(str));
-    QGridLayout *layout = this->ui->field;
-    int sizex = board->GetSizex();
-    int sizey = board->GetSizey();
-
-    for (int row = 0; row < sizex; ++row) {
-        for (int col = 0; col < sizey; ++col) {
-            QPushButton* button = qobject_cast<QPushButton*>(layout->itemAtPosition(row, col)->widget());
-            button->setEnabled(false);
+    for (QGraphicsItem* item : scene->items()) {
+        if (CellItem* cell = dynamic_cast<CellItem*>(item)) {
+            cell->Disable();
         }
     }
 }
 
 void GameWindow::onLeftClicked(int row, int col)
 {
-    QObject *senderObj = sender();
-    QPushButton *button = qobject_cast<QPushButton *>(senderObj);
-
-    if (button) {
-        int res = board->RevealCell(row, col);
-        if (res == -1)
-        {
-            DrawField(board->GetLosingField());
-            GameOver("Game over!");
-        }
-        else if (res == 1)
-        {
-            DrawField(board->GetDrawField());
-        }
-        else if (res == 2)
-        {
-            DrawField(board->GetDrawField());
-            GameOver("You won!");
-        }
-        return;
+    int res = board->RevealCell(row, col);
+    if (res == -1)
+    {
+        DrawField(LOST);
+        GameOver("Game over!");
+    }
+    else if (res == 1)
+    {
+        DrawField(PUBLIC);
+    }
+    else if (res == 2)
+    {
+        DrawField(PUBLIC);
+        GameOver("You won!");
     }
 }
 
 void GameWindow::onRightClicked(int row, int col)
 {
-    QObject *senderObj = sender();
-    QPushButton *button = qobject_cast<QPushButton *>(senderObj);
-
-    if (button) {
-        board->FlagCell(row, col);
-        DrawField(board->GetDrawField());
-        return;
-    }
+    board->FlagCell(row, col);
+    DrawField(PUBLIC);
 }
 
-void GameWindow::on_btnShowMines_clicked()
+void GameWindow::on_newGameBtn_clicked()
 {
-    DrawField(board->GetPrivField());
+    board->Reset();
+    DrawField(PUBLIC);
+    for (QGraphicsItem* item : scene->items()) {
+        if (CellItem* cell = dynamic_cast<CellItem*>(item)) {
+            cell->Enable();
+        }
+    }
+    // this->centralWidget()->findChild<QPushButton*>("btnNewGame")->setText("New Game");
 }
 

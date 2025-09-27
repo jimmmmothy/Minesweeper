@@ -8,7 +8,7 @@
 Board::Board(int sizex, int sizey, int mineCount) : sizex(sizex), sizey(sizey), mineCountTotal(mineCount), mineCountRem(mineCount)
 {
     privField = InitField();
-    drawField = InitField();
+    publicField = InitField();
     losingField = InitField();
     freeCountRem = sizex * sizey - mineCount;
     PlaceMines();
@@ -36,6 +36,16 @@ void Board::ResetField(char** field)
     }
 }
 
+void Board::FinishPublicField()
+{
+    for (int row = 0; row < sizex; ++row) {
+        for (int col = 0; col < sizey; ++col) {
+            if (privField[row][col] == 'M' && publicField[row][col] == '.')
+                publicField[row][col] = 'F';
+        }
+    }
+}
+
 int Board::GetSizex()
 {
     return sizex;
@@ -54,7 +64,7 @@ int Board::GetMineCount()
 void Board::Reset()
 {
     ResetField(privField);
-    ResetField(drawField);
+    ResetField(publicField);
     ResetField(losingField);
     mineCountRem = this->mineCountTotal;
     freeCountRem = sizex * sizey - mineCountTotal;
@@ -63,7 +73,7 @@ void Board::Reset()
 
 void Board::PlaceMines()
 {
-    int totalCells = sizex * sizey;
+    const std::size_t totalCells = sizex * sizey;
     std::vector<int> pool(totalCells);
 
     std::iota(pool.begin(), pool.end(), 0);
@@ -80,27 +90,27 @@ void Board::PlaceMines()
     }
 }
 
-char** Board::GetDrawField()
+char** Board::GetPublicField()
 {
-    return drawField;
+    return publicField;
 }
 
 char** Board::GetLosingField()
 {
     for (int row = 0; row < sizex; ++row) {
         for (int col = 0; col < sizey; ++col) {
-            if (drawField[row][col] == '.' && privField[row][col] == 'M')
+            if (publicField[row][col] == '.' && privField[row][col] == 'M')
             {
                 losingField[row][col] = 'M';
                 continue;
             }
-            if (drawField[row][col] == 'F' && privField[row][col] != 'M')
+            if (publicField[row][col] == 'F' && privField[row][col] != 'M')
             {
                 losingField[row][col] = 'X';
                 continue;
             }
 
-            losingField[row][col] = drawField[row][col];
+            losingField[row][col] = publicField[row][col];
         }
     }
 
@@ -113,12 +123,12 @@ char** Board::GetPrivField()
 }
 
 int Board::RevealCell(int row, int col) {
-    if (drawField[row][col] != '.') {
+    if (publicField[row][col] != '.') {
         return this->ChordCell(row, col);
     }
 
     if (privField[row][col] == 'M') {
-        drawField[row][col] = 'B';
+        publicField[row][col] = 'B';
         return -1;
     }
 
@@ -131,11 +141,11 @@ int Board::RevealCell(int row, int col) {
         auto [r, c] = toReveal.front();
         toReveal.pop();
 
-        drawField[r][c] = '0';
+        publicField[r][c] = '0';
         freeCountRem--;
 
         if (CheckAdjacentMines(r, c) > 0) {
-            drawField[r][c] = '0' + CheckAdjacentMines(r, c);
+            publicField[r][c] = '0' + CheckAdjacentMines(r, c);
             continue;
         }
 
@@ -146,7 +156,7 @@ int Board::RevealCell(int row, int col) {
             int newCol = c + directions[i].second;
 
             if (newRow >= 0 && newRow < sizex && newCol >= 0 && newCol < sizey) {
-                if (visited.count({newRow, newCol}) == 0 && privField[newRow][newCol] != 'M' && drawField[newRow][newCol] == '.') {
+                if (visited.count({newRow, newCol}) == 0 && privField[newRow][newCol] != 'M' && publicField[newRow][newCol] == '.') {
                     toReveal.push({newRow, newCol});
                     visited.insert({newRow, newCol});
                 }
@@ -155,17 +165,20 @@ int Board::RevealCell(int row, int col) {
     }
 
     if (freeCountRem == 0)
+    {
+        FinishPublicField();
         return 2;
+    }
     return 1;
 }
 
 int Board::ChordCell(int row, int col)
 {
-    if (drawField[row][col] == ' ')
+    if (publicField[row][col] == ' ')
         return 0;
 
     // Check if is satisfied
-    int revealedNum = drawField[row][col] - 48;
+    int revealedNum = publicField[row][col] - 48;
     if (CheckAdjacentFlags(row, col) != revealedNum)
         return 0;
 
@@ -179,7 +192,7 @@ int Board::ChordCell(int row, int col)
         int newCol = col + directions[i].second;
 
         if (newRow >= 0 && newRow < sizex && newCol >= 0 && newCol < sizey) {
-            if (drawField[newRow][newCol] == '.') {
+            if (publicField[newRow][newCol] == '.') {
                 int res = RevealCell(newRow, newCol);
                 if (res == -1)
                     foundMine = true;
@@ -191,19 +204,24 @@ int Board::ChordCell(int row, int col)
 
     if (foundMine)
         return -1;
+
     if (gameWon)
+    {
+        FinishPublicField();
         return 2;
+    }
+
     return 1;
 }
 
 void Board::FlagCell(int row, int col)
 {
-    if (drawField[row][col] == '.') {
-        drawField[row][col] = 'F';
+    if (publicField[row][col] == '.') {
+        publicField[row][col] = 'F';
         mineCountRem--;
     }
-    else if (drawField[row][col] == 'F') {
-        drawField[row][col] = '.';
+    else if (publicField[row][col] == 'F') {
+        publicField[row][col] = '.';
         mineCountRem++;
     }
 }
@@ -237,7 +255,7 @@ int Board::CheckAdjacentFlags(int row, int col)
         int newCol = col + directions[i].second;
 
         if (newRow >= 0 && newRow < sizex && newCol >= 0 && newCol < sizey) {
-            if (drawField[newRow][newCol] == 'F') {
+            if (publicField[newRow][newCol] == 'F') {
                 flagCount++;
             }
         }

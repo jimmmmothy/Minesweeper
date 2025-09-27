@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>400</height>
+    <width>600</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,67 +17,61 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Mysweeper</string>
+   <string>MySweeper</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="gridLayoutWidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="1" column="0">
+     <layout class="QVBoxLayout" name="vLayout">
+      <item>
+       <layout class="QHBoxLayout" name="hLayout"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
+   <widget class="QGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>80</y>
-      <width>261</width>
-      <height>271</height>
+      <x>350</x>
+      <y>20</y>
+      <width>100</width>
+      <height>41</height>
      </rect>
-    </property>
-    <layout class="QGridLayout" name="field">
-     <property name="sizeConstraint">
-      <enum>QLayout::SizeConstraint::SetFixedSize</enum>
-     </property>
-    </layout>
-   </widget>
-   <widget class="QPushButton" name="btnNewGame">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>50</y>
-      <width>101</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="text">
-     <string>New Game</string>
     </property>
    </widget>
-   <widget class="QLabel" name="mineCountLbl">
+   <widget class="QPushButton" name="newGameBtn">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>50</y>
-      <width>54</width>
-      <height>17</height>
+      <x>275</x>
+      <y>20</y>
+      <width>50</width>
+      <height>50</height>
      </rect>
     </property>
-    <property name="text">
-     <string>TextLabel</string>
+    <property name="minimumSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
     </property>
-   </widget>
-   <widget class="QPushButton" name="btnShowMines">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>81</width>
-      <height>25</height>
-     </rect>
+    <property name="maximumSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+border-image: url(:/textures/textures/faces/smileface.png) 0 0 0 0 stretch stretch;
+}
+
+QPushButton:pressed {
+border-image: url(:/textures/textures/faces/clickface.png) 0 0 0 0 stretch stretch;
+}
+</string>
     </property>
     <property name="text">
-     <string>debug mines</string>
+     <string/>
     </property>
    </widget>
   </widget>

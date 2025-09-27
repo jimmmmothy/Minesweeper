@@ -2,8 +2,10 @@
 
 #include <QMainWindow>
 #include <memory>
+#include <qgraphicsview.h>
 #include "board.h"
-#include "qextendedbutton.h"
+#include "counter.h"
+#include "enums.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,18 +20,20 @@ class GameWindow : public QMainWindow
 public:
     GameWindow(QWidget *parent = nullptr);
     ~GameWindow();
-    QExtendedButton* InitButton(char** field, int row, int col);
-    void DrawField(char** field);
+    // QExtendedButton* InitButton(char** field, int row, int col);
+    void DrawField(FieldType type);
     void GameOver(std::string str);
 
 private slots:
     void onRightClicked(int row, int col);
     void onLeftClicked(int row, int col);
-    void on_btnNewGame_clicked();
-
-    void on_btnShowMines_clicked();
+    void on_newGameBtn_clicked();
 
 private:
+    const int CELL_SIZE = 20;
+    bool isFirstDraw = true;
     Ui::GameWindow *ui;
     std::unique_ptr<Board> board;
+    Counter* mineCount;
+    QGraphicsScene* scene;
 };
