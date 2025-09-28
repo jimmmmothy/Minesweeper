@@ -8,7 +8,7 @@ class CellItem : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    CellItem(int size, int row, int col, std::unique_ptr<Board>* board);
+    CellItem(int size, int row, int col, Board* board);
     void UpdateState(FieldType = PUBLIC);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void Disable();
@@ -20,7 +20,7 @@ protected:
 private:
     int row;
     int col;
-    std::unique_ptr<Board>* board;
+    Board* board;
     CellState state;
     int number;
     bool isDisabled = false;

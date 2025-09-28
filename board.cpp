@@ -5,21 +5,28 @@
 #include <queue>
 #include <set>
 
-Board::Board(int sizex, int sizey, int mineCount) : sizex(sizex), sizey(sizey), mineCountTotal(mineCount), mineCountRem(mineCount)
+Board::Board(int sizex, int sizey, int mineCount) : m_size({sizex, sizey}), m_mineCountTotal(mineCount), m_mineCountRem(mineCount)
 {
-    privField = InitField();
-    publicField = InitField();
-    losingField = InitField();
-    freeCountRem = sizex * sizey - mineCount;
+    m_privField = InitField();
+    m_publicField = InitField();
+    m_freeCountRem = sizex * sizey - mineCount;
     PlaceMines();
+}
+
+Board::~Board()
+{
+    delete m_privField;
+    delete m_publicField;
 }
 
 char** Board::InitField()
 {
-    char** field = new char*[this->sizex];
-    for (int row = 0; row < sizex; ++row) {
-        field[row] = new char[sizey];
-        for (int col = 0; col < sizey; ++col) {
+    char** field = new char*[m_size.x];
+    for (int row = 0; row < m_size.x; ++row) 
+    {
+        field[row] = new char[m_size.y];
+        for (int col = 0; col < m_size.y; ++col) 
+        {
             field[row][col] = '.';
         }
     }
@@ -29,8 +36,10 @@ char** Board::InitField()
 
 void Board::ResetField(char** field)
 {
-    for (int row = 0; row < sizex; ++row) {
-        for (int col = 0; col < sizey; ++col) {
+    for (int row = 0; row < m_size.x; ++row) 
+    {
+        for (int col = 0; col < m_size.y; ++col) 
+        {
             field[row][col] = '.';
         }
     }
@@ -38,97 +47,97 @@ void Board::ResetField(char** field)
 
 void Board::FinishPublicField()
 {
-    for (int row = 0; row < sizex; ++row) {
-        for (int col = 0; col < sizey; ++col) {
-            if (privField[row][col] == 'M' && publicField[row][col] == '.')
-                publicField[row][col] = 'F';
+    for (int row = 0; row < m_size.x; ++row) 
+    {
+        for (int col = 0; col < m_size.y; ++col) 
+        {
+            if (m_privField[row][col] == 'M' && m_publicField[row][col] == '.')
+                m_publicField[row][col] = 'F';
         }
     }
+
+    m_mineCountRem = 0;
 }
 
-int Board::GetSizex()
+Size Board::GetSize()
 {
-    return sizex;
-}
-
-int Board::GetSizey()
-{
-    return sizey;
+    return m_size;
 }
 
 int Board::GetMineCount()
 {
-    return mineCountRem;
+    return m_mineCountRem;
 }
 
 void Board::Reset()
 {
-    ResetField(privField);
-    ResetField(publicField);
-    ResetField(losingField);
-    mineCountRem = this->mineCountTotal;
-    freeCountRem = sizex * sizey - mineCountTotal;
+    ResetField(m_privField);
+    ResetField(m_publicField);
+    m_mineCountRem = this->m_mineCountTotal;
+    m_freeCountRem = m_size.x * m_size.y - m_mineCountTotal;
     PlaceMines();
 }
 
 void Board::PlaceMines()
 {
-    const std::size_t totalCells = sizex * sizey;
+    const std::size_t totalCells = m_size.x * m_size.y;
     std::vector<int> pool(totalCells);
 
     std::iota(pool.begin(), pool.end(), 0);
 
     std::srand(static_cast<unsigned>(time(nullptr)));
 
-    for (int i = 0; i < this->mineCountTotal; i++) {
+    for (int i = 0; i < this->m_mineCountTotal; i++) 
+    {
         int randI = std::rand() % (pool.size());
         int cell = pool[randI];
-        int col = cell % sizey;
-        int row = cell / sizey;
-        privField[row][col] = 'M';
+        int col = cell % m_size.y;
+        int row = cell / m_size.y;
+        m_privField[row][col] = 'M';
         pool.erase(pool.begin() + randI);
     }
 }
 
 char** Board::GetPublicField()
 {
-    return publicField;
+    return m_publicField;
 }
 
 char** Board::GetLosingField()
 {
-    for (int row = 0; row < sizex; ++row) {
-        for (int col = 0; col < sizey; ++col) {
-            if (publicField[row][col] == '.' && privField[row][col] == 'M')
+    for (int row = 0; row < m_size.x; ++row) 
+    {
+        for (int col = 0; col < m_size.y; ++col) 
+        {
+            if (m_publicField[row][col] == '.' && m_privField[row][col] == 'M')
             {
-                losingField[row][col] = 'M';
-                continue;
+                m_publicField[row][col] = 'M';
             }
-            if (publicField[row][col] == 'F' && privField[row][col] != 'M')
+            else if (m_publicField[row][col] == 'F' && m_privField[row][col] != 'M')
             {
-                losingField[row][col] = 'X';
-                continue;
+                m_publicField[row][col] = 'X';
             }
-
-            losingField[row][col] = publicField[row][col];
         }
     }
 
-    return losingField;
+    return m_publicField;
 }
 
 char** Board::GetPrivField()
 {
-    return privField;
+    return m_privField;
 }
 
-int Board::RevealCell(int row, int col) {
-    if (publicField[row][col] != '.') {
+int Board::RevealCell(int row, int col) 
+{
+    if (m_publicField[row][col] != '.') 
+    {
         return this->ChordCell(row, col);
     }
 
-    if (privField[row][col] == 'M') {
-        publicField[row][col] = 'B';
+    if (m_privField[row][col] == 'M') 
+    {
+        m_publicField[row][col] = 'B';
         return -1;
     }
 
@@ -141,22 +150,27 @@ int Board::RevealCell(int row, int col) {
         auto [r, c] = toReveal.front();
         toReveal.pop();
 
-        publicField[r][c] = '0';
-        freeCountRem--;
+        m_publicField[r][c] = '0';
+        m_freeCountRem--;
 
-        if (CheckAdjacentMines(r, c) > 0) {
-            publicField[r][c] = '0' + CheckAdjacentMines(r, c);
+        int adjacentMines = CheckAdjacentMines(r, c);
+        if (adjacentMines > 0) 
+        {
+            m_publicField[r][c] = '0' + adjacentMines;
             continue;
         }
 
         std::pair<int, int> directions[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) 
+        {
             int newRow = r + directions[i].first;
             int newCol = c + directions[i].second;
 
-            if (newRow >= 0 && newRow < sizex && newCol >= 0 && newCol < sizey) {
-                if (visited.count({newRow, newCol}) == 0 && privField[newRow][newCol] != 'M' && publicField[newRow][newCol] == '.') {
+            if (newRow >= 0 && newRow < m_size.x && newCol >= 0 && newCol < m_size.y) 
+            {
+                if (visited.count({newRow, newCol}) == 0 && m_privField[newRow][newCol] != 'M' && m_publicField[newRow][newCol] == '.') 
+                {
                     toReveal.push({newRow, newCol});
                     visited.insert({newRow, newCol});
                 }
@@ -164,35 +178,40 @@ int Board::RevealCell(int row, int col) {
         }
     }
 
-    if (freeCountRem == 0)
+    if (m_freeCountRem == 0)
     {
         FinishPublicField();
         return 2;
     }
+
     return 1;
 }
 
 int Board::ChordCell(int row, int col)
 {
-    if (publicField[row][col] == ' ')
+    if (m_publicField[row][col] == ' ')
         return 0;
 
     // Check if is satisfied
-    int revealedNum = publicField[row][col] - 48;
+    int revealedNum = m_publicField[row][col] - '0';
     if (CheckAdjacentFlags(row, col) != revealedNum)
         return 0;
 
-    // If yes: chord
+    // If yes: chord (open all cells surrounding)
     std::pair<int, int> directions[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
     bool foundMine = false;
     bool gameWon = false;
-    for (int i = 0; i < 8; i++) {
+
+    for (int i = 0; i < 8; i++) 
+    {
         int newRow = row + directions[i].first;
         int newCol = col + directions[i].second;
 
-        if (newRow >= 0 && newRow < sizex && newCol >= 0 && newCol < sizey) {
-            if (publicField[newRow][newCol] == '.') {
+        if (newRow >= 0 && newRow < m_size.x && newCol >= 0 && newCol < m_size.y) 
+        {
+            if (m_publicField[newRow][newCol] == '.') 
+            {
                 int res = RevealCell(newRow, newCol);
                 if (res == -1)
                     foundMine = true;
@@ -216,13 +235,15 @@ int Board::ChordCell(int row, int col)
 
 void Board::FlagCell(int row, int col)
 {
-    if (publicField[row][col] == '.') {
-        publicField[row][col] = 'F';
-        mineCountRem--;
+    if (m_publicField[row][col] == '.') 
+    {
+        m_publicField[row][col] = 'F';
+        m_mineCountRem--;
     }
-    else if (publicField[row][col] == 'F') {
-        publicField[row][col] = '.';
-        mineCountRem++;
+    else if (m_publicField[row][col] == 'F') 
+    {
+        m_publicField[row][col] = '.';
+        m_mineCountRem++;
     }
 }
 
@@ -235,8 +256,8 @@ int Board::CheckAdjacentMines(int row, int col)
         int newRow = row + directions[i].first;
         int newCol = col + directions[i].second;
 
-        if (newRow >= 0 && newRow < sizex && newCol >= 0 && newCol < sizey) {
-            if (privField[newRow][newCol] == 'M') {
+        if (newRow >= 0 && newRow < m_size.x && newCol >= 0 && newCol < m_size.y) {
+            if (m_privField[newRow][newCol] == 'M') {
                 mines++;
             }
         }
@@ -247,19 +268,19 @@ int Board::CheckAdjacentMines(int row, int col)
 
 int Board::CheckAdjacentFlags(int row, int col)
 {
-    int flagCount = 0;
+    int flags = 0;
     std::pair<int, int> directions[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
     for (int i = 0; i < 8; i++) {
         int newRow = row + directions[i].first;
         int newCol = col + directions[i].second;
 
-        if (newRow >= 0 && newRow < sizex && newCol >= 0 && newCol < sizey) {
-            if (publicField[newRow][newCol] == 'F') {
-                flagCount++;
+        if (newRow >= 0 && newRow < m_size.x && newCol >= 0 && newCol < m_size.y) {
+            if (m_publicField[newRow][newCol] == 'F') {
+                flags++;
             }
         }
     }
 
-    return flagCount;
+    return flags;
 }

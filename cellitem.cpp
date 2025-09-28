@@ -4,7 +4,7 @@
 #include <QImage>
 #include <QString>
 
-CellItem::CellItem(int size, int row, int col, std::unique_ptr<Board>* board)
+CellItem::CellItem(int size, int row, int col, Board* board)
     : QGraphicsRectItem(0, 0, size, size), row(row), col(col), board(board)
 {
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
@@ -85,11 +85,11 @@ void CellItem::UpdateState(FieldType field)
 {
     char cell;
     if (field == PRIV)
-        cell = (*board)->GetPrivField()[row][col];
+        cell = board->GetPrivField()[row][col];
     else if (field == LOST)
-        cell = (*board)->GetLosingField()[row][col]; // WHY DOES THIS NOT SHOW??
+        cell = board->GetLosingField()[row][col]; // WHY DOES THIS NOT SHOW??
     else
-        cell = (*board)->GetPublicField()[row][col];
+        cell = board->GetPublicField()[row][col];
 
     switch (cell) {
     case '.':

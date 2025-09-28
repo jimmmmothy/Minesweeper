@@ -5,12 +5,14 @@ project(Minesweeper LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find includes in corresponding build directories
+# Find includes in corresponding build directories.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 # Instruct CMake to run uic automatically when needed.
 set(CMAKE_AUTOUIC ON)
+# Should resolve issues with qt auto built ui files.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Find Qt5 files
 find_package(Qt5Widgets REQUIRED)

@@ -33,7 +33,7 @@ private:
     const int CELL_SIZE = 20;
     bool isFirstDraw = true;
     Ui::GameWindow *ui;
-    std::unique_ptr<Board> board;
-    Counter* mineCount;
-    QGraphicsScene* scene;
+    Board board;
+    Counter mineCount;
+    QGraphicsScene scene;
 };
