@@ -10,7 +10,6 @@ Board::Board(int sizex, int sizey, int mineCount) : m_size({sizex, sizey}), m_mi
     m_privField = InitField();
     m_publicField = InitField();
     m_freeCountRem = sizex * sizey - mineCount;
-    PlaceMines();
 }
 
 Board::~Board()
@@ -75,15 +74,39 @@ void Board::Reset()
     ResetField(m_publicField);
     m_mineCountRem = this->m_mineCountTotal;
     m_freeCountRem = m_size.x * m_size.y - m_mineCountTotal;
-    PlaceMines();
 }
 
-void Board::PlaceMines()
+void Board::PlaceMines(int row, int col) // Don't place mines around clicked cell
 {
     const std::size_t totalCells = m_size.x * m_size.y;
     std::vector<int> pool(totalCells);
+    
+    std::pair<int, int> directions[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {0, 0},  {1, -1}, {1, 0}, {1, 1}};
+    int indexes[9];
+
+    for (int i = 0; i < 9; i++) {
+        int newRow = row + directions[i].first;
+        int newCol = col + directions[i].second;
+        int idOneDimension = newCol + newRow * m_size.y;
+
+        if (newRow >= 0 && newRow < m_size.x && newCol >= 0 && newCol < m_size.y) 
+        {
+            indexes[i] = idOneDimension;
+        }
+        else 
+        {
+            indexes[i] = -1;
+        }
+    }
 
     std::iota(pool.begin(), pool.end(), 0);
+    for (int i = 8; i >= 0; i--) 
+    {
+        if (indexes[i] != -1)
+        {    
+            pool.erase(pool.begin() + indexes[i]);
+        }
+    }
 
     std::srand(static_cast<unsigned>(time(nullptr)));
 
@@ -128,8 +151,13 @@ char** Board::GetPrivField()
     return m_privField;
 }
 
-int Board::RevealCell(int row, int col) 
+int Board::RevealCell(int row, int col, bool isFirstClick) 
 {
+    if (isFirstClick)
+    {
+        PlaceMines(row, col);
+    }
+
     if (m_publicField[row][col] != '.') 
     {
         return this->ChordCell(row, col);
@@ -212,7 +240,7 @@ int Board::ChordCell(int row, int col)
         {
             if (m_publicField[newRow][newCol] == '.') 
             {
-                int res = RevealCell(newRow, newCol);
+                int res = RevealCell(newRow, newCol, false);
                 if (res == -1)
                     foundMine = true;
                 else if (res == 2)

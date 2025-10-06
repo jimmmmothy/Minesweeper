@@ -6,17 +6,17 @@ Counter::Counter(int count)
     // tens = new QLabel();
     // hundreds = new QLabel();
 
-    hundreds.setFixedSize(20, 40);
-    tens.setFixedSize(20, 40);
-    ones.setFixedSize(20, 40);
+    m_hundreds.setFixedSize(20, 40);
+    m_tens.setFixedSize(20, 40);
+    m_ones.setFixedSize(20, 40);
 
-    hundreds.setScaledContents(true);
-    tens.setScaledContents(true);
-    ones.setScaledContents(true);
+    m_hundreds.setScaledContents(true);
+    m_tens.setScaledContents(true);
+    m_ones.setScaledContents(true);
 
-    this->addWidget(&hundreds);
-    this->addWidget(&tens);
-    this->addWidget(&ones);
+    this->addWidget(&m_hundreds);
+    this->addWidget(&m_tens);
+    this->addWidget(&m_ones);
 
     this->setSpacing(0);
 
@@ -39,11 +39,11 @@ void Counter::Set(int count)
     QString base = ":/textures/textures/counters/counter";
 
     QPixmap p1(base + QString::number(ones) + ".png");
-    this->ones.setPixmap(p1);
+    this->m_ones.setPixmap(p1);
 
     QPixmap p2(base + QString::number(tens) + ".png");
-    this->tens.setPixmap(p2);
+    this->m_tens.setPixmap(p2);
 
     QPixmap p3(base + QString::number(hundreds) + ".png");
-    this->hundreds.setPixmap(p3);
+    this->m_hundreds.setPixmap(p3);
 }

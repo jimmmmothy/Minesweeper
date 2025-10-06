@@ -32,6 +32,7 @@ private slots:
 private:
     const int CELL_SIZE = 20;
     bool isFirstDraw = true;
+    bool isFirstClick = true;
     Ui::GameWindow *ui;
     Board board;
     Counter mineCount;

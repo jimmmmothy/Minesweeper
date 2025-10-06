@@ -10,8 +10,8 @@ class Board
 public:
     Board(int sizex, int sizey, int mineCount);
     ~Board();
-    void PlaceMines();
-    int RevealCell(int row, int col);
+    void PlaceMines(int row, int col);
+    int RevealCell(int row, int col, bool isFirstClick);
     int ChordCell(int row, int col);
     void FlagCell(int row, int col);
     void Reset();

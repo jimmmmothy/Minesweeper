@@ -10,7 +10,7 @@
 #include <QTransform>
 
 GameWindow::GameWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::GameWindow), board(100, 100, 10), scene(this), mineCount(0)
+    : QMainWindow(parent), ui(new Ui::GameWindow), board(30, 24, 160), scene(this), mineCount(0)
 {
     ui->setupUi(this);
 
@@ -94,7 +94,10 @@ void GameWindow::GameOver(std::string str)
 
 void GameWindow::onLeftClicked(int row, int col)
 {
-    int res = board.RevealCell(row, col);
+    int res = board.RevealCell(row, col, isFirstClick);
+
+    isFirstClick = false;
+
     if (res == -1)
     {
         DrawField(LOST);
@@ -120,6 +123,7 @@ void GameWindow::onRightClicked(int row, int col)
 void GameWindow::on_newGameBtn_clicked()
 {
     board.Reset();
+    isFirstClick = true;
     DrawField(PUBLIC);
     for (QGraphicsItem* item : scene.items()) 
     {

@@ -5,7 +5,7 @@
 #include <QString>
 
 CellItem::CellItem(int size, int row, int col, Board* board)
-    : QGraphicsRectItem(0, 0, size, size), row(row), col(col), board(board)
+    : QGraphicsRectItem(0, 0, size, size), m_row(row), m_col(col), m_board(board)
 {
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     UpdateState(PUBLIC);
@@ -14,7 +14,7 @@ CellItem::CellItem(int size, int row, int col, Board* board)
 void CellItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QImage drawImg;
-    switch (state) {
+    switch (m_state) {
     case UNOPENED:
     {
         drawImg.load(":/textures/textures/cells/cellup.svg");
@@ -48,7 +48,7 @@ void CellItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     case NUMBER:
     {
         std::string style = ":/textures/textures/cells/cell";
-        style.append(std::to_string(number));
+        style.append(std::to_string(m_number));
         style.append(".svg");
         drawImg.load(QString().fromStdString(style));
         painter->drawImage(rect(), drawImg);
@@ -61,23 +61,23 @@ void CellItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 void CellItem::Disable()
 {
-    isDisabled = true;
+    m_isDisabled = true;
 }
 
 void CellItem::Enable()
 {
-    isDisabled = false;
+    m_isDisabled = false;
 }
 
 void CellItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (isDisabled)
+    if (m_isDisabled)
         return;
 
     if (event->button() == Qt::LeftButton) {
-        emit leftClicked(row, col);
+        emit leftClicked(m_row, m_col);
     } else if (event->button() == Qt::RightButton) {
-        emit rightClicked(row, col);
+        emit rightClicked(m_row, m_col);
     }
 }
 
@@ -85,31 +85,31 @@ void CellItem::UpdateState(FieldType field)
 {
     char cell;
     if (field == PRIV)
-        cell = board->GetPrivField()[row][col];
+        cell = m_board->GetPrivField()[m_row][m_col];
     else if (field == LOST)
-        cell = board->GetLosingField()[row][col]; // WHY DOES THIS NOT SHOW??
+        cell = m_board->GetLosingField()[m_row][m_col]; // WHY DOES THIS NOT SHOW??
     else
-        cell = board->GetPublicField()[row][col];
+        cell = m_board->GetPublicField()[m_row][m_col];
 
     switch (cell) {
     case '.':
-        state = UNOPENED;
+        m_state = UNOPENED;
         break;
     case 'F':
-        state = FLAGGED;
+        m_state = FLAGGED;
         break;
     case 'M':
-        state = MINE;
+        m_state = MINE;
         break;
     case 'B':
-        state = BLAST;
+        m_state = BLAST;
         break;
     case 'X':
-        state = FALSE;
+        m_state = FALSE;
         break;
     default:
-        state = NUMBER;
-        number = cell - '0';
+        m_state = NUMBER;
+        m_number = cell - '0';
         break;
     }
 

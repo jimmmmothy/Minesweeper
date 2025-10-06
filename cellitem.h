@@ -18,12 +18,12 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
-    int row;
-    int col;
-    Board* board;
-    CellState state;
-    int number;
-    bool isDisabled = false;
+    int m_row;
+    int m_col;
+    Board* m_board;
+    CellState m_state;
+    int m_number;
+    bool m_isDisabled = false;
 
 
 signals:

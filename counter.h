@@ -15,7 +15,7 @@ signals:
     void layoutChanged();
 
 private:
-    QLabel ones;
-    QLabel tens;
-    QLabel hundreds;
+    QLabel m_ones;
+    QLabel m_tens;
+    QLabel m_hundreds;
 };
